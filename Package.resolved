@@ -1,13 +1,13 @@
 {
-  "originHash" : "2cb65513197c69a9ef5879f466ab104c5e1cdaeeb45145cd6663dd952e9f06ee",
+  "originHash" : "61f99bb8587320380c5fe6f0bd8fbadd3580ee799113a1d240e4120cd4b3ac5a",
   "pins" : [
     {
       "identity" : "codeeditorplugin",
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/ajmcclary/CodeEditorPlugin.git",
       "state" : {
-        "branch" : "main",
-        "revision" : "26fb9397aa7b22452b0aa7ab9671a0760af73353"
+        "revision" : "89b804cbdc4114631965474c8002554ec4c0ac98",
+        "version" : "0.1.0-beta.2"
       }
     },
     {
