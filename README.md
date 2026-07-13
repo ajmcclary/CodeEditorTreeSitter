@@ -25,6 +25,17 @@ graph — only apps that opt into tree-sitter highlighting depend on
 - Swift 6.3+ (Swift 6 language mode, strict concurrency)
 - macOS 26.3+, iOS 26.3+ (mirrors CodeEditorPlugin)
 
+## CI status
+
+The GitHub Actions workflow is expected to FAIL while the dependency
+repositories (CodeEditorPlugin, TreeSitterKit, LanguageKit, DesignKit) are
+private: the runner's default `GITHUB_TOKEN` is scoped to this repository
+only and cannot clone them (known limitation, accepted 2026-07-13). Local
+`swift build` / `swift test` work because your own git credentials have
+access. If the dependency repos become public (or a read-scoped PAT secret
+is wired into the workflow), CI will go green without changes to the
+package itself.
+
 ## Installation
 
 Add to your `Package.swift`. Note the deliberate, non-semver pins:
