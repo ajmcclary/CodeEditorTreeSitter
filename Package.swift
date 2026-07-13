@@ -21,9 +21,11 @@
 ///
 /// ## Dependency pinning (deliberate — see README)
 ///
-/// - `CodeEditorPlugin` is consumed by **branch** (`main`): it cannot be
-///   consumed by version because SwiftPM rejects stable-version deps on a
-///   package that itself has branch/revision-pinned dependencies.
+/// - `CodeEditorPlugin` is consumed by **version**
+///   (`.upToNextMinor(from: "0.1.0-beta.2")`): its former branch-pinned
+///   swift-snapshot-testing fork dependency was replaced by an upstream
+///   version pin, so SwiftPM now resolves it through a stable-version
+///   requirement.
 /// - `TreeSitterKit` is consumed by **exact revision** (the commit tag `0.1.0`
 ///   points at): its grammar dependencies are exact revisions, so it likewise
 ///   cannot be resolved through a stable-version dep.
@@ -49,10 +51,11 @@ let package = Package(
         )
     ],
     dependencies: [
-        // Consumed by branch: CodeEditorPlugin has branch/revision-pinned
-        // dependencies (a swift-snapshot-testing fork), so SwiftPM will not
-        // resolve it via a stable-version requirement.
-        .package(url: "https://github.com/ajmcclary/CodeEditorPlugin.git", branch: "main"),
+        // Consumed by version: CodeEditorPlugin's dependencies are all
+        // version-pinned (the swift-snapshot-testing fork was replaced by an
+        // upstream version pin), so SwiftPM resolves it by a stable-version
+        // requirement.
+        .package(url: "https://github.com/ajmcclary/CodeEditorPlugin.git", .upToNextMinor(from: "0.1.0-beta.2")),
         // Consumed by exact revision: the commit tag 0.1.0 points at. Its
         // grammar pins are exact revisions, so it must be consumed by
         // revision, never by version (documented in TreeSitterKit's README).

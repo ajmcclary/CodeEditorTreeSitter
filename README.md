@@ -50,9 +50,10 @@ dependencies: [
 package depending on it inherits these resolution rules):
 
 ```swift
-// CodeEditorPlugin: by branch — it has branch/revision-pinned dependencies
-// (a swift-snapshot-testing fork), so SwiftPM will not resolve it by version.
-.package(url: "https://github.com/ajmcclary/CodeEditorPlugin.git", branch: "main"),
+// CodeEditorPlugin: by version — its former branch-pinned swift-snapshot-testing
+// fork dependency was replaced by an upstream version pin, so SwiftPM resolves it
+// by a stable-version requirement.
+.package(url: "https://github.com/ajmcclary/CodeEditorPlugin.git", .upToNextMinor(from: "0.1.0-beta.2")),
 
 // TreeSitterKit: by exact revision (the commit tag 0.1.0 points at) — its
 // grammar pins are exact revisions, so it must be consumed by revision.
