@@ -1,0 +1,208 @@
+{
+  "originHash" : "2cb65513197c69a9ef5879f466ab104c5e1cdaeeb45145cd6663dd952e9f06ee",
+  "pins" : [
+    {
+      "identity" : "codeeditorplugin",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/ajmcclary/CodeEditorPlugin.git",
+      "state" : {
+        "branch" : "main",
+        "revision" : "26fb9397aa7b22452b0aa7ab9671a0760af73353"
+      }
+    },
+    {
+      "identity" : "combine-schedulers",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/pointfreeco/combine-schedulers",
+      "state" : {
+        "revision" : "dcccb979a2183b8df3334237e3dc1ae2b4116a86",
+        "version" : "1.2.0"
+      }
+    },
+    {
+      "identity" : "designkit",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/ajmcclary/DesignKit.git",
+      "state" : {
+        "revision" : "a9d33e2fbf196fc6131af67f1ff9c63e30b49495",
+        "version" : "1.1.0"
+      }
+    },
+    {
+      "identity" : "languagekit",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/ajmcclary/LanguageKit.git",
+      "state" : {
+        "revision" : "b4dadf4963e50bc83728b951104d0135663daad4",
+        "version" : "0.1.0"
+      }
+    },
+    {
+      "identity" : "swift-clocks",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/pointfreeco/swift-clocks",
+      "state" : {
+        "revision" : "72d749bf341b78851203066ab421869b783ec42a",
+        "version" : "1.1.0"
+      }
+    },
+    {
+      "identity" : "swift-concurrency-extras",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/pointfreeco/swift-concurrency-extras",
+      "state" : {
+        "revision" : "a90e2e40a7a840a853dd29e57cbef5dbb72c9d5b",
+        "version" : "1.4.0"
+      }
+    },
+    {
+      "identity" : "swift-dependencies",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/pointfreeco/swift-dependencies",
+      "state" : {
+        "revision" : "8dc1fbf2f6255a73dec53b4648164884898db4c5",
+        "version" : "1.14.1"
+      }
+    },
+    {
+      "identity" : "swift-syntax",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/swiftlang/swift-syntax.git",
+      "state" : {
+        "revision" : "4799286537280063c85a32f09884cfbca301b1a1",
+        "version" : "602.0.0"
+      }
+    },
+    {
+      "identity" : "swifttreesitter",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/ChimeHQ/SwiftTreeSitter.git",
+      "state" : {
+        "revision" : "2599e95310b3159641469d8a21baf2d3d200e61f",
+        "version" : "0.8.0"
+      }
+    },
+    {
+      "identity" : "tree-sitter-c",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/tree-sitter/tree-sitter-c",
+      "state" : {
+        "revision" : "3efee11f784605d44623d7dadd6cd12a0f73ea92"
+      }
+    },
+    {
+      "identity" : "tree-sitter-c-sharp",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/tree-sitter/tree-sitter-c-sharp.git",
+      "state" : {
+        "revision" : "b27b091bfdc5f16d0ef76421ea5609c82a57dff0"
+      }
+    },
+    {
+      "identity" : "tree-sitter-cpp",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/tree-sitter/tree-sitter-cpp",
+      "state" : {
+        "revision" : "e5cea0ec884c5c3d2d1e41a741a66ce13da4d945"
+      }
+    },
+    {
+      "identity" : "tree-sitter-dart",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/UserNobody14/tree-sitter-dart",
+      "state" : {
+        "revision" : "80e23c07b64494f7e21090bb3450223ef0b192f4"
+      }
+    },
+    {
+      "identity" : "tree-sitter-go",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/tree-sitter/tree-sitter-go",
+      "state" : {
+        "revision" : "c350fa54d38af725c40d061a602ee3205ef1e072"
+      }
+    },
+    {
+      "identity" : "tree-sitter-java",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/tree-sitter/tree-sitter-java",
+      "state" : {
+        "revision" : "e10607b45ff745f5f876bfa3e94fbcc6b44bdc11"
+      }
+    },
+    {
+      "identity" : "tree-sitter-javascript",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/tree-sitter/tree-sitter-javascript",
+      "state" : {
+        "revision" : "39798e26b6d4dbcee8e522b8db83f8b2df33a5ea"
+      }
+    },
+    {
+      "identity" : "tree-sitter-php",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/provencher/tree-sitter-php",
+      "state" : {
+        "revision" : "0a99deca13c4af1fb9adcb03c958bfc9f4c740a9"
+      }
+    },
+    {
+      "identity" : "tree-sitter-python",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/tree-sitter/tree-sitter-python",
+      "state" : {
+        "revision" : "c5fca1a186e8e528115196178c28eefa8d86b0b0"
+      }
+    },
+    {
+      "identity" : "tree-sitter-ruby",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/tree-sitter/tree-sitter-ruby",
+      "state" : {
+        "revision" : "7a010836b74351855148818d5cb8170dc4df8e6a"
+      }
+    },
+    {
+      "identity" : "tree-sitter-rust",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/tree-sitter/tree-sitter-rust",
+      "state" : {
+        "revision" : "2eaf126458a4d6a69401089b6ba78c5e5d6c1ced"
+      }
+    },
+    {
+      "identity" : "tree-sitter-swift",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/alex-pinkus/tree-sitter-swift",
+      "state" : {
+        "revision" : "9253825dd2570430b53fa128cbb40cb62498e75d"
+      }
+    },
+    {
+      "identity" : "tree-sitter-typescript",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/tree-sitter/tree-sitter-typescript",
+      "state" : {
+        "revision" : "75b3874edb2dc714fb1fd77a32013d0f8699989f"
+      }
+    },
+    {
+      "identity" : "treesitterkit",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/ajmcclary/TreeSitterKit.git",
+      "state" : {
+        "revision" : "b6f181766b48c7416d50874ae0a84af333ad0097"
+      }
+    },
+    {
+      "identity" : "xctest-dynamic-overlay",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/pointfreeco/xctest-dynamic-overlay",
+      "state" : {
+        "revision" : "8f6abcf4c8950e2679d5b2fee4ca284fd7c34886",
+        "version" : "1.11.0"
+      }
+    }
+  ],
+  "version" : 3
+}
