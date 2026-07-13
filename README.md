@@ -27,14 +27,14 @@ graph — only apps that opt into tree-sitter highlighting depend on
 
 ## CI status
 
-The GitHub Actions workflow is expected to FAIL while the dependency
-repositories (CodeEditorPlugin, TreeSitterKit, LanguageKit, DesignKit) are
-private: the runner's default `GITHUB_TOKEN` is scoped to this repository
-only and cannot clone them (known limitation, accepted 2026-07-13). Local
-`swift build` / `swift test` work because your own git credentials have
-access. If the dependency repos become public (or a read-scoped PAT secret
-is wired into the workflow), CI will go green without changes to the
-package itself.
+The dependency repositories (CodeEditorPlugin, TreeSitterKit, LanguageKit,
+DesignKit) are private, and the runner's default `GITHUB_TOKEN` is scoped
+to this repository only — so the workflow authenticates SwiftPM's git
+clones with a read-scoped fine-grained PAT stored as the
+`WORKSPACE_READ_PAT` repository secret (an `insteadOf` rewrite for
+`github.com/ajmcclary`). If that secret is missing (e.g. on a fork), the
+dependency clones fail; local `swift build` / `swift test` are unaffected
+because your own git credentials have access.
 
 ## Installation
 
