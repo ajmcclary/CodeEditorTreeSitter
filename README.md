@@ -23,7 +23,7 @@ graph — only apps that opt into tree-sitter highlighting depend on
 ## Requirements
 
 - Swift 6.3+ (Swift 6 language mode, strict concurrency)
-- macOS 26.3+, iOS 26.3+ (mirrors CodeEditorPlugin)
+- macOS 26.0+, iOS 26.0+ (mirrors CodeEditorPlugin)
 
 ## CI status
 
@@ -38,12 +38,11 @@ because your own git credentials have access.
 
 ## Installation
 
-Add to your `Package.swift` (branch pin until this package cuts its first
-tag — all of its own dependencies resolve by version):
+Add to your `Package.swift`:
 
 ```swift
 dependencies: [
-    .package(url: "https://github.com/ajmcclary/CodeEditorTreeSitter.git", branch: "main")
+    .package(url: "https://github.com/ajmcclary/CodeEditorTreeSitter.git", .upToNextMinor(from: "0.1.0"))
 ]
 ```
 
@@ -51,10 +50,10 @@ dependencies: [
 package depending on it inherits these resolution rules):
 
 ```swift
-// CodeEditorPlugin: by version — its former branch-pinned swift-snapshot-testing
-// fork dependency was replaced by an upstream version pin, so SwiftPM resolves it
-// by a stable-version requirement.
-.package(url: "https://github.com/ajmcclary/CodeEditorPlugin.git", .upToNextMinor(from: "0.1.0-beta.2")),
+// CodeEditorPlugin: by version. 0.1.0-beta.3 is a prerelease identifier, so
+// the lower bound names it explicitly (SwiftPM only resolves prerelease tags
+// when the requirement's lower bound is itself a prerelease).
+.package(url: "https://github.com/ajmcclary/CodeEditorPlugin.git", .upToNextMinor(from: "0.1.0-beta.3")),
 
 // TreeSitterKit: normal semver since 0.2.0 (grammars are vendored at
 // documented revisions, so the package has no revision-pinned deps).

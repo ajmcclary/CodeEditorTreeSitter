@@ -1,13 +1,13 @@
 {
-  "originHash" : "d6bf538b6ddf1c77d3db976a1bb2f486d2b828a43e89c934678ccea6fbd54cdc",
+  "originHash" : "e65477e86f58ee3a9793a8dc862ea0d4f526d828a72cbca92a42ea42678907eb",
   "pins" : [
     {
       "identity" : "codeeditorplugin",
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/ajmcclary/CodeEditorPlugin.git",
       "state" : {
-        "revision" : "89b804cbdc4114631965474c8002554ec4c0ac98",
-        "version" : "0.1.0-beta.2"
+        "revision" : "11d50ee5bb0a9590435379c3cec232efed08db86",
+        "version" : "0.1.0-beta.3"
       }
     },
     {
@@ -24,8 +24,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/ajmcclary/DesignKit.git",
       "state" : {
-        "revision" : "a9d33e2fbf196fc6131af67f1ff9c63e30b49495",
-        "version" : "1.1.0"
+        "revision" : "0e77f6009555a2893c29b16fc30bea25b3dc7b8c",
+        "version" : "1.2.0"
       }
     },
     {

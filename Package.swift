@@ -17,12 +17,12 @@
 /// ## Requirements
 ///
 /// - **Swift**: 6.3 or later (Swift 6 language mode, strict concurrency).
-/// - **Platforms** (mirrors CodeEditorPlugin): macOS 26.3+, iOS 26.3+.
+/// - **Platforms** (mirrors CodeEditorPlugin): macOS 26.0+, iOS 26.0+.
 ///
 /// ## Dependency pinning (deliberate — see README)
 ///
 /// - `CodeEditorPlugin` is consumed by **version**
-///   (`.upToNextMinor(from: "0.1.0-beta.2")`): its former branch-pinned
+///   (`.upToNextMinor(from: "0.1.0-beta.3")`): its former branch-pinned
 ///   swift-snapshot-testing fork dependency was replaced by an upstream
 ///   version pin, so SwiftPM now resolves it through a stable-version
 ///   requirement.
@@ -43,7 +43,7 @@ let swiftSettings: [SwiftSetting] = [
 
 let package = Package(
     name: "CodeEditorTreeSitter",
-    platforms: [.macOS("26.3"), .iOS("26.3")],
+    platforms: [.macOS("26.0"), .iOS("26.0")],
     products: [
         .library(
             name: "CodeEditorTreeSitter",
@@ -55,7 +55,7 @@ let package = Package(
         // version-pinned (the swift-snapshot-testing fork was replaced by an
         // upstream version pin), so SwiftPM resolves it by a stable-version
         // requirement.
-        .package(url: "https://github.com/ajmcclary/CodeEditorPlugin.git", .upToNextMinor(from: "0.1.0-beta.2")),
+        .package(url: "https://github.com/ajmcclary/CodeEditorPlugin.git", .upToNextMinor(from: "0.1.0-beta.3")),
         .package(url: "https://github.com/ajmcclary/TreeSitterKit.git", .upToNextMinor(from: "0.2.0")),
         .package(url: "https://github.com/ajmcclary/LanguageKit.git", .upToNextMinor(from: "0.1.0"))
     ],
