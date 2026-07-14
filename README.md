@@ -38,7 +38,8 @@ because your own git credentials have access.
 
 ## Installation
 
-Add to your `Package.swift`. Note the deliberate, non-semver pins:
+Add to your `Package.swift` (branch pin until this package cuts its first
+tag — all of its own dependencies resolve by version):
 
 ```swift
 dependencies: [
