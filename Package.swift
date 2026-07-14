@@ -26,9 +26,9 @@
 ///   swift-snapshot-testing fork dependency was replaced by an upstream
 ///   version pin, so SwiftPM now resolves it through a stable-version
 ///   requirement.
-/// - `TreeSitterKit` is consumed by **exact revision** (the commit tag `0.1.0`
-///   points at): its grammar dependencies are exact revisions, so it likewise
-///   cannot be resolved through a stable-version dep.
+/// - `TreeSitterKit` is a normal semver dep since 0.2.0 (its grammars are
+///   vendored at documented revisions, so the package no longer carries
+///   revision-pinned dependencies).
 /// - `LanguageKit` is a normal semver dep.
 ///
 /// Everything is consumed by URL — no `.package(path:)` — so the package
@@ -56,13 +56,7 @@ let package = Package(
         // upstream version pin), so SwiftPM resolves it by a stable-version
         // requirement.
         .package(url: "https://github.com/ajmcclary/CodeEditorPlugin.git", .upToNextMinor(from: "0.1.0-beta.2")),
-        // Consumed by exact revision: the commit tag 0.1.0 points at. Its
-        // grammar pins are exact revisions, so it must be consumed by
-        // revision, never by version (documented in TreeSitterKit's README).
-        .package(
-            url: "https://github.com/ajmcclary/TreeSitterKit.git",
-            revision: "b6f181766b48c7416d50874ae0a84af333ad0097"
-        ),
+        .package(url: "https://github.com/ajmcclary/TreeSitterKit.git", .upToNextMinor(from: "0.2.0")),
         .package(url: "https://github.com/ajmcclary/LanguageKit.git", .upToNextMinor(from: "0.1.0"))
     ],
     targets: [

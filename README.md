@@ -55,12 +55,9 @@ package depending on it inherits these resolution rules):
 // by a stable-version requirement.
 .package(url: "https://github.com/ajmcclary/CodeEditorPlugin.git", .upToNextMinor(from: "0.1.0-beta.2")),
 
-// TreeSitterKit: by exact revision (the commit tag 0.1.0 points at) — its
-// grammar pins are exact revisions, so it must be consumed by revision.
-.package(
-    url: "https://github.com/ajmcclary/TreeSitterKit.git",
-    revision: "b6f181766b48c7416d50874ae0a84af333ad0097"
-),
+// TreeSitterKit: normal semver since 0.2.0 (grammars are vendored at
+// documented revisions, so the package has no revision-pinned deps).
+.package(url: "https://github.com/ajmcclary/TreeSitterKit.git", .upToNextMinor(from: "0.2.0")),
 
 // LanguageKit: ordinary semver.
 .package(url: "https://github.com/ajmcclary/LanguageKit.git", .upToNextMinor(from: "0.1.0"))
