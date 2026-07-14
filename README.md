@@ -97,6 +97,37 @@ To back a provider with a custom parser (custom input-size limits or a subset
 of languages), use `init(languageID:parser:)` with your own
 `SyntaxParser`.
 
+### Use with CodeEditorView / SwiftUI
+
+CodeEditorPlugin exposes a public injection seam that installs a
+`HighlightRangeProviding` as the editor's **primary** highlight source (replacing
+the built-in regex/SwiftSyntax highlighter). Pick whichever entry point fits:
+
+```swift
+import CodeEditorTreeSitter
+import CodeEditorSwiftUI
+import LanguageKit
+
+let provider = try TreeSitterHighlightProvider.standard(languageID: .swift)
+
+// SwiftUI modifier
+CodeEditor(text: $code)
+    .codeEditorHighlightProvider(provider)
+
+// …or via an EditorController
+controller.setExternalHighlightProvider(provider)
+
+// …or directly on the AppKit/UIKit view
+codeEditorView.setExternalHighlightProvider(provider)
+```
+
+The provider only paints once the editor's range-store pipeline is enabled:
+
+```swift
+config.performance.usesRangeBasedHighlighting = true
+config.display.useRangeStoreHighlighting = true
+```
+
 ## Token-type mapping
 
 `HighlightToken.tokenType` is a raw string. The provider emits the raw values of
