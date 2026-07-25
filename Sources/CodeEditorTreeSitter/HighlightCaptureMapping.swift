@@ -5,10 +5,10 @@ import Foundation
 ///
 /// ## Vocabulary
 ///
-/// The emitted strings are the raw values of CodeEditorPlugin's internal
+/// The emitted strings are the raw values of CodeEditorKit's internal
 /// `TokenType` enum (`keyword`, `identifier`, `string`, `number`, `comment`,
 /// `type`, `function`, `property`, `operator`, `punctuation`, `whitespace`,
-/// `preprocessor`, `unknown`). CodeEditorPlugin's editor bridge maps a
+/// `preprocessor`, `unknown`). CodeEditorKit's editor bridge maps a
 /// ``HighlightToken/tokenType`` back to that enum with
 /// `TokenType(rawValue:) ?? .identifier`, so emitting these exact strings lets
 /// the editor style tree-sitter tokens with no extra adapter. We do **not**
@@ -25,7 +25,7 @@ import Foundation
 /// 2. The capture's base segment (text before the first `.`) looked up in
 ///    ``baseCategories``.
 /// 3. The documented fallback ``fallbackTokenType`` (`identifier`) — the same
-///    fallback CodeEditorPlugin's bridge uses for unrecognized raw values, so
+///    fallback CodeEditorKit's bridge uses for unrecognized raw values, so
 ///    an unknown capture is styled as a plain identifier rather than dropped.
 ///
 /// Two capture names are deliberately dropped (mapped to `nil`): `none` and
@@ -33,7 +33,7 @@ import Foundation
 /// `@spell` marks prose regions for spell-checking, not syntax coloring;
 /// emitting a styled token for either would miscolor the text.
 public enum HighlightCaptureMapping {
-    /// Raw token type strings, mirroring CodeEditorPlugin's `TokenType`
+    /// Raw token type strings, mirroring CodeEditorKit's `TokenType`
     /// raw values. Pinned so a rename on either side is caught by tests.
     public enum TokenTypeRawValue {
         public static let keyword = "keyword"

@@ -1,10 +1,10 @@
 # CodeEditorTreeSitter
 
 A Tree-sitter-backed syntax-highlighting provider for
-[CodeEditorPlugin](https://github.com/ajmcclary/CodeEditorPlugin)'s view-free
+[CodeEditorKit](https://github.com/ajmcclary/CodeEditorKit)'s view-free
 `CodeEditorHighlightingCore` contracts.
 
-`TreeSitterHighlightProvider` conforms to CodeEditorPlugin's
+`TreeSitterHighlightProvider` conforms to CodeEditorKit's
 `HighlightRangeProviding` protocol and produces `HighlightToken`s by parsing a
 document with [TreeSitterKit](https://github.com/ajmcclary/TreeSitterKit)'s
 `SyntaxParser`, running the language's highlight query, and mapping tree-sitter
@@ -23,11 +23,11 @@ graph — only apps that opt into tree-sitter highlighting depend on
 ## Requirements
 
 - Swift 6.3+ (Swift 6 language mode, strict concurrency)
-- macOS 26.0+, iOS 26.0+ (mirrors CodeEditorPlugin)
+- macOS 26.0+, iOS 26.0+ (mirrors CodeEditorKit)
 
 ## CI status
 
-The dependency repositories (CodeEditorPlugin, TreeSitterKit, LanguageKit,
+The dependency repositories (CodeEditorKit, TreeSitterKit, LanguageKit,
 DesignKit) are private, and the runner's default `GITHUB_TOKEN` is scoped
 to this repository only — so the workflow authenticates SwiftPM's git
 clones with a read-scoped fine-grained PAT stored as the
@@ -50,10 +50,12 @@ dependencies: [
 package depending on it inherits these resolution rules):
 
 ```swift
-// CodeEditorPlugin: by version. 0.1.0-beta.3 is a prerelease identifier, so
+// CodeEditorKit: by version. 0.1.0-beta.6 is a prerelease identifier, so
 // the lower bound names it explicitly (SwiftPM only resolves prerelease tags
-// when the requirement's lower bound is itself a prerelease).
-.package(url: "https://github.com/ajmcclary/CodeEditorPlugin.git", .upToNextMinor(from: "0.1.0-beta.3")),
+// when the requirement's lower bound is itself a prerelease). beta.6 is also
+// the first tag published as CodeEditorKit — beta.5 and earlier are
+// CodeEditorPlugin, i.e. a different SwiftPM identity.
+.package(url: "https://github.com/ajmcclary/CodeEditorKit.git", .upToNextMinor(from: "0.1.0-beta.6")),
 
 // TreeSitterKit: normal semver since 0.2.0 (grammars are vendored at
 // documented revisions, so the package has no revision-pinned deps).
@@ -98,7 +100,7 @@ of languages), use `init(languageID:parser:)` with your own
 
 ### Use with CodeEditorView / SwiftUI
 
-CodeEditorPlugin exposes a public injection seam that installs a
+CodeEditorKit exposes a public injection seam that installs a
 `HighlightRangeProviding` as the editor's **primary** highlight source (replacing
 the built-in regex/SwiftSyntax highlighter). Pick whichever entry point fits:
 
@@ -130,7 +132,7 @@ config.display.useRangeStoreHighlighting = true
 ## Token-type mapping
 
 `HighlightToken.tokenType` is a raw string. The provider emits the raw values of
-CodeEditorPlugin's internal `TokenType` enum, so the editor's highlight bridge
+CodeEditorKit's internal `TokenType` enum, so the editor's highlight bridge
 (`TokenType(rawValue:) ?? .identifier`) styles the tokens directly. The mapping
 (`HighlightCaptureMapping.tokenType(forCapture:)`) is total:
 

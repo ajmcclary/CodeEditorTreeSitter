@@ -1,13 +1,13 @@
 {
-  "originHash" : "e65477e86f58ee3a9793a8dc862ea0d4f526d828a72cbca92a42ea42678907eb",
+  "originHash" : "dbcf033595c2dd18f38c364427de315c7a277189314971cc7e7f402e8bb2b474",
   "pins" : [
     {
-      "identity" : "codeeditorplugin",
+      "identity" : "codeeditorkit",
       "kind" : "remoteSourceControl",
-      "location" : "https://github.com/ajmcclary/CodeEditorPlugin.git",
+      "location" : "https://github.com/ajmcclary/CodeEditorKit.git",
       "state" : {
-        "revision" : "11d50ee5bb0a9590435379c3cec232efed08db86",
-        "version" : "0.1.0-beta.3"
+        "revision" : "c4c14f6043411cf046d58826d934659bb57a8b43",
+        "version" : "0.1.0-beta.6"
       }
     },
     {
@@ -35,6 +35,15 @@
       "state" : {
         "revision" : "b4dadf4963e50bc83728b951104d0135663daad4",
         "version" : "0.1.0"
+      }
+    },
+    {
+      "identity" : "processkit",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/ajmcclary/ProcessKit.git",
+      "state" : {
+        "revision" : "1e58a5aedda64625a183a2d1dff5c12dd4cc7176",
+        "version" : "0.1.0-beta.4"
       }
     },
     {
@@ -89,6 +98,15 @@
       "state" : {
         "revision" : "d3e04f4a3408cf8537d942241b126b8a19b92a21",
         "version" : "0.2.0"
+      }
+    },
+    {
+      "identity" : "workspacekit",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/ajmcclary/WorkspaceKit.git",
+      "state" : {
+        "revision" : "d557ffe53ce47d461be3a745956774df21dbe9c3",
+        "version" : "0.1.0-beta.9"
       }
     },
     {

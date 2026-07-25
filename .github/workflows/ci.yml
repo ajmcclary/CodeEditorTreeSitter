@@ -34,7 +34,7 @@ jobs:
         with:
           fetch-depth: 1
 
-      # The ajmcclary/* dependency repos (CodeEditorPlugin, TreeSitterKit,
+      # The ajmcclary/* dependency repos (CodeEditorKit, TreeSitterKit,
       # LanguageKit, DesignKit) are private; the default GITHUB_TOKEN is
       # scoped to this repository only, so SwiftPM's git clones need a
       # read-scoped fine-grained PAT, stored as the WORKSPACE_READ_PAT repo
