@@ -47,7 +47,15 @@ let swiftSettings: [SwiftSetting] = [
 
 let package = Package(
     name: "CodeEditorTreeSitter",
-    platforms: [.macOS("26.0"), .iOS("26.0")],
+    // macOS ONLY. The former `.iOS("26.0")` is retired, not merely raised: this
+    // package implements CodeEditorKit's CodeEditorHighlightingCore contracts,
+    // and CodeEditorKit 0.1.0-beta.7 dropped its own iOS declaration because
+    // its CodeEditorWorkspace shim re-exports WorkspaceKit, whose
+    // FileSystemService uses the FSEvents C API unguarded (FSEvents does not
+    // exist on iOS). A dependent cannot claim a platform its dependency
+    // cannot build for. Restoring iOS here requires platform-gating
+    // WorkspaceKit's WorkspaceFileSystem target first.
+    platforms: [.macOS("27.0")],
     products: [
         .library(
             name: "CodeEditorTreeSitter",
@@ -60,8 +68,8 @@ let package = Package(
         // upstream version pin), so SwiftPM resolves it by a stable-version
         // requirement.
         .package(url: "https://github.com/ajmcclary/CodeEditorKit.git", .upToNextMinor(from: "0.1.0-beta.6")),
-        .package(url: "https://github.com/ajmcclary/TreeSitterKit.git", .upToNextMinor(from: "0.2.0")),
-        .package(url: "https://github.com/ajmcclary/LanguageKit.git", .upToNextMinor(from: "0.1.0"))
+        .package(url: "https://github.com/ajmcclary/TreeSitterKit.git", .upToNextMinor(from: "0.3.0")),
+        .package(url: "https://github.com/ajmcclary/LanguageKit.git", .upToNextMinor(from: "0.2.0"))
     ],
     targets: [
         .target(

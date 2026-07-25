@@ -1,13 +1,13 @@
 {
-  "originHash" : "dbcf033595c2dd18f38c364427de315c7a277189314971cc7e7f402e8bb2b474",
+  "originHash" : "f157ed252a87460777bb1e28e475de836674ccadad1ab3da80c4a030ff4b263f",
   "pins" : [
     {
       "identity" : "codeeditorkit",
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/ajmcclary/CodeEditorKit.git",
       "state" : {
-        "revision" : "c4c14f6043411cf046d58826d934659bb57a8b43",
-        "version" : "0.1.0-beta.6"
+        "revision" : "e40e69623553ad33a9fafd5c1e4cb79c405518b5",
+        "version" : "0.1.0-beta.7"
       }
     },
     {
@@ -24,8 +24,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/ajmcclary/DesignKit.git",
       "state" : {
-        "revision" : "0e77f6009555a2893c29b16fc30bea25b3dc7b8c",
-        "version" : "1.2.0"
+        "revision" : "e4ff62a7456366e8219ddfd5ef894ba4fe37f08e",
+        "version" : "2.0.0"
       }
     },
     {
@@ -33,8 +33,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/ajmcclary/LanguageKit.git",
       "state" : {
-        "revision" : "b4dadf4963e50bc83728b951104d0135663daad4",
-        "version" : "0.1.0"
+        "revision" : "7dae239a730b0bc604ea151b56fbec5a078e1fb0",
+        "version" : "0.2.0"
       }
     },
     {
@@ -42,8 +42,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/ajmcclary/ProcessKit.git",
       "state" : {
-        "revision" : "1e58a5aedda64625a183a2d1dff5c12dd4cc7176",
-        "version" : "0.1.0-beta.4"
+        "revision" : "2accb5874c539b46be7bc72ddda24ce051c6aed9",
+        "version" : "0.1.0-beta.5"
       }
     },
     {
@@ -60,8 +60,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/pointfreeco/swift-concurrency-extras",
       "state" : {
-        "revision" : "a90e2e40a7a840a853dd29e57cbef5dbb72c9d5b",
-        "version" : "1.4.0"
+        "revision" : "5fa253428866f2360c3754e88537f700ed2656b5",
+        "version" : "1.4.1"
       }
     },
     {
@@ -96,8 +96,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/ajmcclary/TreeSitterKit.git",
       "state" : {
-        "revision" : "d3e04f4a3408cf8537d942241b126b8a19b92a21",
-        "version" : "0.2.0"
+        "revision" : "7702f24a2c757908918bc425a3b57d5c4e97b8d9",
+        "version" : "0.3.0"
       }
     },
     {
@@ -105,8 +105,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/ajmcclary/WorkspaceKit.git",
       "state" : {
-        "revision" : "d557ffe53ce47d461be3a745956774df21dbe9c3",
-        "version" : "0.1.0-beta.9"
+        "revision" : "924a19e4ac52f1fa32b724b2b37581d9e5c5d7c7",
+        "version" : "0.1.0-beta.10"
       }
     },
     {
