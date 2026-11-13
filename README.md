@@ -160,12 +160,29 @@ the same fallback the editor bridge uses — so nothing is silently lost.
 ## Invalidation semantics
 
 `invalidate(for:in:)` returns a whole-document invalidation
-(`HighlightInvalidation.everything(length:)`) and drops the internal token
-cache. This is the simplest correct behavior the contract supports: after any
-edit, the next parse re-tokenizes the whole document. The contract lets the
-editor re-query only the intersection of the invalidation with the visible
-viewport, so over-reporting is safe. Incremental tree-editing (re-highlighting
-only the edited span) is intentionally out of scope for v1.
+(`HighlightInvalidation.everything(length:)`), and drops a queued parse of the
+pre-edit text when the edit carries `previousText`. This is the simplest
+correct behavior the contract supports: after any edit, the next parse
+re-tokenizes the whole document. The contract lets the editor re-query only the
+intersection of the invalidation with the visible viewport, so over-reporting
+is safe. Incremental tree-editing (re-highlighting only the edited span) is
+intentionally out of scope for v1.
+
+## Caching, scheduling and the size limit
+
+One provider can serve every open document of its language. Token lists are
+cached by exact document text in a small least-recently-used cache (eight
+texts), so documents sharing a provider do not evict each other. Parses run
+one at a time; concurrent requests for the same text share one parse. A queued
+parse is dropped when all its requests are cancelled or an edit supersedes its
+text, and those requests throw `CancellationError`.
+
+A document over the parser's highlight limits (5,000 lines with the standard
+limits) is never parsed and gets no tokens. `HighlightRangeProviding` cannot
+say "use the built-in highlighter instead", so a host that installs this
+provider as the editor's primary highlighter should check
+`exceedsHighlightLimits(_:)` and keep the built-in highlighter for such
+documents.
 
 ## License
 

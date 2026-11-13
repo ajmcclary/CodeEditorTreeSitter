@@ -27,16 +27,42 @@ import TreeSitterStandardLanguages
 ///
 /// The editor drives `HighlightRangeProviding` as a pull loop, calling
 /// ``highlights(in:of:)`` once per visible range. Re-parsing on every call
-/// would be wasteful, so the provider memoizes the full token list keyed by the
+/// would be wasteful, so the provider memoizes full token lists keyed by the
 /// document's exact text: the first query for a given document text parses and
 /// caches; subsequent queries (other visible ranges of the same text) filter
-/// the cached list. An edit resets the cache (see ``invalidate(for:in:)``).
+/// the cached list. The cache is a small least-recently-used set of
+/// ``tokenCacheCapacity`` texts, because a host typically shares one provider
+/// across every open document of a language and those documents must not
+/// evict each other. An edited document's old text is never looked up again
+/// and ages out.
+///
+/// ## Scheduling
+///
+/// The provider runs one parse at a time, in request order. Concurrent
+/// requests for the same text share one parse. Before a queued parse starts,
+/// the provider drops it if every request waiting for it has been cancelled,
+/// or if an edit has superseded its text (``invalidate(for:in:)`` names the
+/// pre-edit text in ``CodeEditorHighlightingCore/HighlightTextEdit/previousText``);
+/// those requests throw `CancellationError`. A request from an already
+/// cancelled task throws `CancellationError` without queueing. A cancelled
+/// request whose parse is already running still receives its result, since
+/// the parse costs nothing more by then.
+///
+/// ## Size limit
+///
+/// A document over the parser's highlight limits
+/// (``TreeSitterCore/SyntaxInputLimits/highlightMaxLineCount`` and the general
+/// parse limits) is never parsed and yields no tokens. `HighlightRangeProviding`
+/// has no way to say "no result, use the built-in highlighter", so a host that
+/// installs this provider as the editor's primary highlighter should check
+/// ``exceedsHighlightLimits(_:)`` and keep the built-in highlighter for such
+/// documents.
 ///
 /// ## Invalidation semantics (v1)
 ///
 /// ``invalidate(for:in:)`` returns a **whole-document** invalidation
-/// (``CodeEditorHighlightingCore/HighlightInvalidation/everything(length:)``)
-/// and clears the token cache. This is the simplest correct semantics the
+/// (``CodeEditorHighlightingCore/HighlightInvalidation/everything(length:)``).
+/// This is the simplest correct semantics the
 /// contract supports: after any edit the next parse re-tokenizes the whole
 /// document. The contract lets the editor re-query only the intersection of the
 /// invalidation with the visible viewport, so over-reporting is safe and does
@@ -50,9 +76,40 @@ public actor TreeSitterHighlightProvider: HighlightRangeProviding {
 
     private let parser: SyntaxParser
 
-    /// Memoized token list and the exact document text it was computed from.
-    private var cachedText: String?
-    private var cachedTokens: [HighlightToken]?
+    /// Runs the highlight query for a text. Normally `parser.captures`.
+    private let captureSource: @Sendable (String) async throws -> [SyntaxCapture]
+
+    /// The highlight limits as one ``TreeSitterCore/SyntaxInputLimits`` whose
+    /// line limit is the stricter of the parse and highlight line limits.
+    private nonisolated let highlightLimits: SyntaxInputLimits
+
+    /// How many document texts the token cache holds.
+    static let tokenCacheCapacity = 8
+
+    /// Memoized token lists, least recently used first.
+    private var tokenCache: [(text: String, tokens: [HighlightToken])] = []
+
+    /// One pending or running parse and the requests waiting for its result.
+    private final class ParseJob {
+        let text: String
+        var waiters: [Int: CheckedContinuation<[HighlightToken], any Error>] = [:]
+
+        init(text: String) {
+            self.text = text
+        }
+    }
+
+    /// Parses not yet started, in request order.
+    private var queuedJobs: [ParseJob] = []
+    private var runningJob: ParseJob?
+    private var isDrainingQueue = false
+    private var nextWaiterID = 0
+
+    /// Requests currently waiting for a parse, queued or running. Tests read
+    /// it to know a request has reached the provider.
+    var waitingRequestCount: Int {
+        queuedJobs.reduce(runningJob?.waiters.count ?? 0) { $0 + $1.waiters.count }
+    }
 
     // MARK: - Initialization
 
@@ -65,11 +122,59 @@ public actor TreeSitterHighlightProvider: HighlightRangeProviding {
     /// - Throws: ``TreeSitterHighlightProviderError/unsupportedLanguage(_:)``
     ///   when the language has no highlight support in `parser`.
     public init(languageID: LanguageID, parser: SyntaxParser) throws {
+        try self.init(
+            languageID: languageID,
+            parser: parser,
+            captureSource: { text in
+                try await parser.captures(in: text, language: languageID)
+            }
+        )
+    }
+
+    /// Creates a provider whose captures come from `captureSource` instead of
+    /// calling `parser` directly. Tests use it to count and pace parses.
+    init(
+        languageID: LanguageID,
+        parser: SyntaxParser,
+        captureSource: @escaping @Sendable (String) async throws -> [SyntaxCapture]
+    ) throws {
         guard parser.supportsHighlighting(languageID) else {
             throw TreeSitterHighlightProviderError.unsupportedLanguage(languageID)
         }
         self.languageID = languageID
         self.parser = parser
+        self.captureSource = captureSource
+        self.highlightLimits = Self.highlightLimits(from: parser.limits)
+    }
+
+    /// Folds `highlightMaxLineCount` into `maxLineCount` so one
+    /// ``TreeSitterCore/SyntaxInputLimits/oversizeReason(for:)`` call applies
+    /// every check `SyntaxParser.captures` makes. A limit of zero or less is
+    /// disabled, as in TreeSitterKit.
+    private static func highlightLimits(from limits: SyntaxInputLimits) -> SyntaxInputLimits {
+        var folded = limits
+        let highlightLines = limits.highlightMaxLineCount
+        if highlightLines > 0, limits.maxLineCount <= 0 || highlightLines < limits.maxLineCount {
+            folded.maxLineCount = highlightLines
+        }
+        return folded
+    }
+
+    // MARK: - Size limit
+
+    /// Whether `document` is over the parser's highlight limits, in which case
+    /// this provider never parses it and returns no tokens for it.
+    ///
+    /// `HighlightRangeProviding` cannot signal "use the built-in highlighter
+    /// instead", so a host that installs this provider as the editor's primary
+    /// highlighter should check this (again after edits) and keep the
+    /// built-in highlighter for documents it returns `true` for.
+    public nonisolated func exceedsHighlightLimits(_ document: HighlightDocumentSnapshot) -> Bool {
+        exceedsHighlightLimits(document.text)
+    }
+
+    private nonisolated func exceedsHighlightLimits(_ text: String) -> Bool {
+        highlightLimits.oversizeReason(for: text) != nil
     }
 
     /// Creates a provider backed by a parser preloaded with TreeSitterKit's
@@ -105,14 +210,20 @@ public actor TreeSitterHighlightProvider: HighlightRangeProviding {
         _ = try? await tokens(for: document.text)
     }
 
-    /// Reports the whole document as stale and clears the cache. See the
-    /// type's "Invalidation semantics" discussion.
+    /// Reports the whole document as stale, and drops a queued parse of the
+    /// pre-edit text when the edit carries it. See the type's "Scheduling" and
+    /// "Invalidation semantics" discussions.
+    ///
+    /// The token cache is left alone: it is keyed by exact text, so the
+    /// edited document's next query misses anyway, and other documents
+    /// sharing this provider keep their entries.
     public func invalidate(
-        for _: HighlightTextEdit,
+        for edit: HighlightTextEdit,
         in document: HighlightDocumentSnapshot
     ) async -> HighlightInvalidation {
-        cachedText = nil
-        cachedTokens = nil
+        if let previousText = edit.previousText, previousText != document.text {
+            dropQueuedParse(of: previousText)
+        }
         return .everything(length: document.utf16Length)
     }
 
@@ -124,7 +235,9 @@ public actor TreeSitterHighlightProvider: HighlightRangeProviding {
     /// part of it is visible.
     ///
     /// - Throws: rethrows ``TreeSitterCore/SyntaxParserError`` from the parser
-    ///   (e.g. a non-tolerated highlight-query compile failure).
+    ///   (e.g. a non-tolerated highlight-query compile failure);
+    ///   `CancellationError` when the request was cancelled or its text
+    ///   superseded before its parse started (see "Scheduling").
     public func highlights(
         in range: HighlightRange,
         of document: HighlightDocumentSnapshot
@@ -141,22 +254,125 @@ public actor TreeSitterHighlightProvider: HighlightRangeProviding {
 
     // MARK: - Internals
 
-    /// Returns the memoized token list for `text`, parsing and caching on a
-    /// miss. The cache holds exactly one document's tokens; a different text
-    /// replaces it.
+    /// Returns the memoized token list for `text`, or waits for a parse of it:
+    /// one already running or queued for the same text, else a new one queued
+    /// behind the others.
     private func tokens(for text: String) async throws -> [HighlightToken] {
-        if cachedText == text, let cachedTokens {
-            return cachedTokens
+        if let cached = cachedTokens(for: text) {
+            return cached
         }
-        let computed = try await computeTokens(for: text)
-        cachedText = text
-        cachedTokens = computed
-        return computed
+        if exceedsHighlightLimits(text) {
+            return []
+        }
+        try Task.checkCancellation()
+
+        let job: ParseJob
+        if let running = runningJob, running.text == text {
+            job = running
+        } else if let queued = queuedJobs.first(where: { $0.text == text }) {
+            job = queued
+        } else {
+            job = ParseJob(text: text)
+            queuedJobs.append(job)
+            startDrainingQueue()
+        }
+
+        let waiterID = nextWaiterID
+        nextWaiterID += 1
+        // The waiter is registered before this actor job suspends, so the
+        // cancellation hop below (a later job on this actor) always finds it.
+        return try await withTaskCancellationHandler {
+            try await withCheckedThrowingContinuation { continuation in
+                job.waiters[waiterID] = continuation
+            }
+        } onCancel: {
+            Task { await self.cancelQueuedWaiter(waiterID) }
+        }
+    }
+
+    /// Looks `text` up in the token cache and marks it most recently used.
+    private func cachedTokens(for text: String) -> [HighlightToken]? {
+        guard let index = tokenCache.lastIndex(where: { $0.text == text }) else {
+            return nil
+        }
+        let entry = tokenCache.remove(at: index)
+        tokenCache.append(entry)
+        return entry.tokens
+    }
+
+    private func storeTokens(_ tokens: [HighlightToken], for text: String) {
+        tokenCache.removeAll { $0.text == text }
+        tokenCache.append((text: text, tokens: tokens))
+        if tokenCache.count > Self.tokenCacheCapacity {
+            tokenCache.removeFirst(tokenCache.count - Self.tokenCacheCapacity)
+        }
+    }
+
+    private func startDrainingQueue() {
+        guard !isDrainingQueue else { return }
+        isDrainingQueue = true
+        // Unstructured on purpose: the drain belongs to the provider, so no
+        // single requester's cancellation stops parses others wait for.
+        Task { await self.drainQueue() }
+    }
+
+    /// Runs queued parses one at a time, skipping any whose waiters have all
+    /// gone (cancelled or superseded) before it starts.
+    private func drainQueue() async {
+        while !queuedJobs.isEmpty {
+            let job = queuedJobs.removeFirst()
+            guard !job.waiters.isEmpty else { continue }
+            runningJob = job
+            let result: Result<[HighlightToken], any Error>
+            do {
+                result = .success(try await computeTokens(for: job.text))
+            } catch {
+                result = .failure(error)
+            }
+            runningJob = nil
+            if case .success(let tokens) = result {
+                storeTokens(tokens, for: job.text)
+            }
+            let waiters = job.waiters.values
+            job.waiters.removeAll()
+            for continuation in waiters {
+                continuation.resume(with: result)
+            }
+        }
+        isDrainingQueue = false
+    }
+
+    /// Fails a cancelled request whose parse has not started, and drops the
+    /// parse when no one else waits for it. A request whose parse is running
+    /// is left to receive the result.
+    private func cancelQueuedWaiter(_ waiterID: Int) {
+        guard let index = queuedJobs.firstIndex(where: { $0.waiters[waiterID] != nil }) else {
+            return
+        }
+        let continuation = queuedJobs[index].waiters.removeValue(forKey: waiterID)
+        if queuedJobs[index].waiters.isEmpty {
+            queuedJobs.remove(at: index)
+        }
+        continuation?.resume(throwing: CancellationError())
+    }
+
+    /// Fails every request waiting for a queued parse of `text` and drops the
+    /// parse: an edit has replaced that text.
+    private func dropQueuedParse(of text: String) {
+        guard let index = queuedJobs.firstIndex(where: { $0.text == text }) else {
+            return
+        }
+        let job = queuedJobs.remove(at: index)
+        let waiters = job.waiters.values
+        job.waiters.removeAll()
+        for continuation in waiters {
+            continuation.resume(throwing: CancellationError())
+        }
     }
 
     /// Parses `text`, runs the highlight query, and maps captures to tokens.
     private func computeTokens(for text: String) async throws -> [HighlightToken] {
-        let captures = try await parser.captures(in: text, language: languageID)
+        let captures = try await captureSource(text)
         guard !captures.isEmpty else { return [] }
 
         // `SyntaxCapture.range` is an NSRange in UTF-16 code units of `text`,
