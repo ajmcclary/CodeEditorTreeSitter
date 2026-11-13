@@ -1,13 +1,13 @@
 {
-  "originHash" : "f157ed252a87460777bb1e28e475de836674ccadad1ab3da80c4a030ff4b263f",
+  "originHash" : "174ff36261580d59f770417ba62629914f936c4c2d02ce882cd467ed1b604352",
   "pins" : [
     {
       "identity" : "codeeditorkit",
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/ajmcclary/CodeEditorKit.git",
       "state" : {
-        "revision" : "fae8139db28d7e61460ef343d54a65759b0a3887",
-        "version" : "0.1.0-beta.11"
+        "revision" : "0ba4a6076dd4d3a2206499f5ef403925bf622f4d",
+        "version" : "0.1.0-beta.15"
       }
     },
     {
@@ -24,8 +24,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/ajmcclary/DesignKit.git",
       "state" : {
-        "revision" : "8b5b288b1ae874a3c2db0e8b73a55a3098abfeb8",
-        "version" : "3.0.0"
+        "revision" : "f02bc7db22b63d71d59e475759806728fb878c6f",
+        "version" : "3.0.1"
       }
     },
     {
@@ -42,8 +42,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/ajmcclary/ProcessKit.git",
       "state" : {
-        "revision" : "2accb5874c539b46be7bc72ddda24ce051c6aed9",
-        "version" : "0.1.0-beta.5"
+        "revision" : "14bd4cd78d3487499bf3315f134e24234e29f6a1",
+        "version" : "0.1.0-beta.6"
       }
     },
     {
@@ -105,8 +105,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/ajmcclary/TreeSitterKit.git",
       "state" : {
-        "revision" : "7702f24a2c757908918bc425a3b57d5c4e97b8d9",
-        "version" : "0.3.0"
+        "revision" : "433227f748eda91ad77cc54bda38f2a86d93decd",
+        "version" : "0.3.1"
       }
     },
     {
@@ -114,8 +114,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/ajmcclary/WorkspaceKit.git",
       "state" : {
-        "revision" : "924a19e4ac52f1fa32b724b2b37581d9e5c5d7c7",
-        "version" : "0.1.0-beta.10"
+        "revision" : "a49b8420a06d52fb16214ffe1b633e0232ab2e39",
+        "version" : "0.1.0-beta.11"
       }
     },
     {

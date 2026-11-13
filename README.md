@@ -50,16 +50,17 @@ dependencies: [
 package depending on it inherits these resolution rules):
 
 ```swift
-// CodeEditorKit: by version. 0.1.0-beta.6 is a prerelease identifier, so
+// CodeEditorKit: by version. 0.1.0-beta.15 is a prerelease identifier, so
 // the lower bound names it explicitly (SwiftPM only resolves prerelease tags
-// when the requirement's lower bound is itself a prerelease). beta.6 is also
-// the first tag published as CodeEditorKit — beta.5 and earlier are
+// when the requirement's lower bound is itself a prerelease). beta.15 is the
+// first tag with HighlightProviderDeclined. Tags before beta.6 are
 // CodeEditorPlugin, i.e. a different SwiftPM identity.
-.package(url: "https://github.com/ajmcclary/CodeEditorKit.git", .upToNextMinor(from: "0.1.0-beta.6")),
+.package(url: "https://github.com/ajmcclary/CodeEditorKit.git", .upToNextMinor(from: "0.1.0-beta.15")),
 
 // TreeSitterKit: normal semver since 0.2.0 (grammars are vendored at
-// documented revisions, so the package has no revision-pinned deps).
-.package(url: "https://github.com/ajmcclary/TreeSitterKit.git", .upToNextMinor(from: "0.2.0")),
+// documented revisions, so the package has no revision-pinned deps). 0.3.1
+// is the first tag that evaluates highlight-query predicates.
+.package(url: "https://github.com/ajmcclary/TreeSitterKit.git", .upToNextMinor(from: "0.3.1")),
 
 // LanguageKit: ordinary semver.
 .package(url: "https://github.com/ajmcclary/LanguageKit.git", .upToNextMinor(from: "0.1.0"))
@@ -178,11 +179,11 @@ parse is dropped when all its requests are cancelled or an edit supersedes its
 text, and those requests throw `CancellationError`.
 
 A document over the parser's highlight limits (5,000 lines with the standard
-limits) is never parsed and gets no tokens. `HighlightRangeProviding` cannot
-say "use the built-in highlighter instead", so a host that installs this
-provider as the editor's primary highlighter should check
-`exceedsHighlightLimits(_:)` and keep the built-in highlighter for such
-documents.
+limits) is never parsed: `highlights(in:of:)` throws
+`HighlightProviderDeclined`, and the editor highlights that document with its
+built-in highlighter instead (CodeEditorKit 0.1.0-beta.15 or later). The editor
+keeps asking, so a document edited back under the limit returns to this
+provider. `exceedsHighlightLimits(_:)` answers the same question up front.
 
 ## License
 

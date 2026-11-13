@@ -52,11 +52,12 @@ import TreeSitterStandardLanguages
 ///
 /// A document over the parser's highlight limits
 /// (``TreeSitterCore/SyntaxInputLimits/highlightMaxLineCount`` and the general
-/// parse limits) is never parsed and yields no tokens. `HighlightRangeProviding`
-/// has no way to say "no result, use the built-in highlighter", so a host that
-/// installs this provider as the editor's primary highlighter should check
-/// ``exceedsHighlightLimits(_:)`` and keep the built-in highlighter for such
-/// documents.
+/// parse limits) is never parsed: ``highlights(in:of:)`` throws
+/// ``CodeEditorHighlightingCore/HighlightProviderDeclined``, and the editor
+/// highlights that document with its built-in highlighter instead. The editor
+/// keeps asking, so a document edited back under the limit returns to this
+/// provider. ``exceedsHighlightLimits(_:)`` answers the same question up
+/// front.
 ///
 /// ## Invalidation semantics (v1)
 ///
@@ -163,12 +164,8 @@ public actor TreeSitterHighlightProvider: HighlightRangeProviding {
     // MARK: - Size limit
 
     /// Whether `document` is over the parser's highlight limits, in which case
-    /// this provider never parses it and returns no tokens for it.
-    ///
-    /// `HighlightRangeProviding` cannot signal "use the built-in highlighter
-    /// instead", so a host that installs this provider as the editor's primary
-    /// highlighter should check this (again after edits) and keep the
-    /// built-in highlighter for documents it returns `true` for.
+    /// this provider never parses it and ``highlights(in:of:)`` throws
+    /// ``CodeEditorHighlightingCore/HighlightProviderDeclined`` for it.
     public nonisolated func exceedsHighlightLimits(_ document: HighlightDocumentSnapshot) -> Bool {
         exceedsHighlightLimits(document.text)
     }
@@ -237,7 +234,9 @@ public actor TreeSitterHighlightProvider: HighlightRangeProviding {
     /// - Throws: rethrows ``TreeSitterCore/SyntaxParserError`` from the parser
     ///   (e.g. a non-tolerated highlight-query compile failure);
     ///   `CancellationError` when the request was cancelled or its text
-    ///   superseded before its parse started (see "Scheduling").
+    ///   superseded before its parse started (see "Scheduling");
+    ///   ``CodeEditorHighlightingCore/HighlightProviderDeclined`` when the
+    ///   document is over the highlight limits (see "Size limit").
     public func highlights(
         in range: HighlightRange,
         of document: HighlightDocumentSnapshot
@@ -262,7 +261,7 @@ public actor TreeSitterHighlightProvider: HighlightRangeProviding {
             return cached
         }
         if exceedsHighlightLimits(text) {
-            return []
+            throw HighlightProviderDeclined()
         }
         try Task.checkCancellation()
 

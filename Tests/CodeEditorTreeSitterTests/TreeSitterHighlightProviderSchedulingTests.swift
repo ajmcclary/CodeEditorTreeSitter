@@ -222,14 +222,30 @@ private struct WaitTimedOut: Error {}
         highlightMaxLineCount: 3
     )
 
-    @Test func documentOverTheHighlightLimitIsNotParsed() async throws {
+    /// Over the limit the provider declines, so the editor highlights the
+    /// document with its built-in highlighter instead of painting nothing.
+    @Test func documentOverTheHighlightLimitIsDeclinedWithoutParsing() async throws {
         let recorder = ParseRecorder(gated: false)
         let provider = try makeProvider(recording: recorder, limits: Self.smallHighlightLimits)
         let doc = document(String(repeating: "let a = 1\n", count: 5))
 
-        let tokens = try await provider.highlights(in: fullRange(doc), of: doc)
-        #expect(tokens.isEmpty)
+        await #expect(throws: HighlightProviderDeclined()) {
+            try await provider.highlights(in: fullRange(doc), of: doc)
+        }
         #expect(await recorder.parsed.isEmpty)
+    }
+
+    /// A document that shrinks back under the limit returns to the provider.
+    @Test func documentBackUnderTheHighlightLimitIsHighlightedAgain() async throws {
+        let recorder = ParseRecorder(gated: false)
+        let provider = try makeProvider(recording: recorder, limits: Self.smallHighlightLimits)
+        let large = document(String(repeating: "let a = 1\n", count: 5))
+        let small = document("let a = 1")
+
+        await #expect(throws: HighlightProviderDeclined()) {
+            try await provider.highlights(in: fullRange(large), of: large)
+        }
+        #expect(try await !provider.highlights(in: fullRange(small), of: small).isEmpty)
     }
 
     @Test func exceedsHighlightLimitsReportsDocumentsTheProviderCannotHighlight() async throws {

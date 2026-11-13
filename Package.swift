@@ -22,17 +22,18 @@
 /// ## Dependency pinning (deliberate — see README)
 ///
 /// - `CodeEditorKit` is consumed by **version**
-///   (`.upToNextMinor(from: "0.1.0-beta.6")`): its former branch-pinned
+///   (`.upToNextMinor(from: "0.1.0-beta.15")`): its former branch-pinned
 ///   swift-snapshot-testing fork dependency was replaced by an upstream
 ///   version pin, so SwiftPM now resolves it through a stable-version
-///   requirement. `0.1.0-beta.6` is the first tag published under the
-///   `CodeEditorKit` name and SwiftPM identity (it was `CodeEditorPlugin` /
-///   `codeeditorplugin` through `0.1.0-beta.5`), so the lower bound names it
-///   explicitly: an older tag would resolve the same products under the old
-///   identity and clash with any dependent that already uses the new URL.
+///   requirement. `0.1.0-beta.15` is the first tag with
+///   `HighlightProviderDeclined` (thrown over the size limit) and the
+///   editor's re-query of a provider's `CancellationError`. Tags before
+///   `0.1.0-beta.6` were published as `CodeEditorPlugin` /
+///   `codeeditorplugin`, a different SwiftPM identity.
 /// - `TreeSitterKit` is a normal semver dep since 0.2.0 (its grammars are
 ///   vendored at documented revisions, so the package no longer carries
-///   revision-pinned dependencies).
+///   revision-pinned dependencies). `0.3.1` is the first tag that evaluates
+///   highlight-query predicates.
 /// - `LanguageKit` is a normal semver dep.
 ///
 /// Everything is consumed by URL — no `.package(path:)` — so the package
@@ -67,8 +68,8 @@ let package = Package(
         // version-pinned (the swift-snapshot-testing fork was replaced by an
         // upstream version pin), so SwiftPM resolves it by a stable-version
         // requirement.
-        .package(url: "https://github.com/ajmcclary/CodeEditorKit.git", .upToNextMinor(from: "0.1.0-beta.6")),
-        .package(url: "https://github.com/ajmcclary/TreeSitterKit.git", .upToNextMinor(from: "0.3.0")),
+        .package(url: "https://github.com/ajmcclary/CodeEditorKit.git", .upToNextMinor(from: "0.1.0-beta.15")),
+        .package(url: "https://github.com/ajmcclary/TreeSitterKit.git", .upToNextMinor(from: "0.3.1")),
         .package(url: "https://github.com/ajmcclary/LanguageKit.git", .upToNextMinor(from: "0.2.0"))
     ],
     targets: [
