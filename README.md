@@ -42,7 +42,7 @@ Add to your `Package.swift`:
 
 ```swift
 dependencies: [
-    .package(url: "https://github.com/ajmcclary/CodeEditorTreeSitter.git", .upToNextMinor(from: "0.1.0"))
+    .package(url: "https://github.com/ajmcclary/CodeEditorTreeSitter.git", .upToNextMinor(from: "0.2.1"))
 ]
 ```
 
@@ -63,7 +63,7 @@ package depending on it inherits these resolution rules):
 .package(url: "https://github.com/ajmcclary/TreeSitterKit.git", .upToNextMinor(from: "0.3.1")),
 
 // LanguageKit: ordinary semver.
-.package(url: "https://github.com/ajmcclary/LanguageKit.git", .upToNextMinor(from: "0.1.0"))
+.package(url: "https://github.com/ajmcclary/LanguageKit.git", .upToNextMinor(from: "0.2.0"))
 ```
 
 ## Usage
