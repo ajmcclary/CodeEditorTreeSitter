@@ -211,14 +211,14 @@ public actor TreeSitterHighlightProvider: HighlightRangeProviding {
     /// pre-edit text when the edit carries it. See the type's "Scheduling" and
     /// "Invalidation semantics" discussions.
     ///
-    /// The token cache is left alone: it is keyed by exact text, so the
+    /// The token cache is left alone: UTF-16 offsets require byte-exact text identity, so the
     /// edited document's next query misses anyway, and other documents
     /// sharing this provider keep their entries.
     public func invalidate(
         for edit: HighlightTextEdit,
         in document: HighlightDocumentSnapshot
     ) async -> HighlightInvalidation {
-        if let previousText = edit.previousText, previousText != document.text {
+        if let previousText = edit.previousText, !previousText.utf8.elementsEqual(document.text.utf8) {
             dropQueuedParse(of: previousText)
         }
         return .everything(length: document.utf16Length)
@@ -266,9 +266,9 @@ public actor TreeSitterHighlightProvider: HighlightRangeProviding {
         try Task.checkCancellation()
 
         let job: ParseJob
-        if let running = runningJob, running.text == text {
+        if let running = runningJob, running.text.utf8.elementsEqual(text.utf8) {
             job = running
-        } else if let queued = queuedJobs.first(where: { $0.text == text }) {
+        } else if let queued = queuedJobs.first(where: { $0.text.utf8.elementsEqual(text.utf8) }) {
             job = queued
         } else {
             job = ParseJob(text: text)
@@ -291,7 +291,7 @@ public actor TreeSitterHighlightProvider: HighlightRangeProviding {
 
     /// Looks `text` up in the token cache and marks it most recently used.
     private func cachedTokens(for text: String) -> [HighlightToken]? {
-        guard let index = tokenCache.lastIndex(where: { $0.text == text }) else {
+        guard let index = tokenCache.lastIndex(where: { $0.text.utf8.elementsEqual(text.utf8) }) else {
             return nil
         }
         let entry = tokenCache.remove(at: index)
@@ -300,7 +300,7 @@ public actor TreeSitterHighlightProvider: HighlightRangeProviding {
     }
 
     private func storeTokens(_ tokens: [HighlightToken], for text: String) {
-        tokenCache.removeAll { $0.text == text }
+        tokenCache.removeAll { $0.text.utf8.elementsEqual(text.utf8) }
         tokenCache.append((text: text, tokens: tokens))
         if tokenCache.count > Self.tokenCacheCapacity {
             tokenCache.removeFirst(tokenCache.count - Self.tokenCacheCapacity)
@@ -358,7 +358,7 @@ public actor TreeSitterHighlightProvider: HighlightRangeProviding {
     /// Fails every request waiting for a queued parse of `text` and drops the
     /// parse: an edit has replaced that text.
     private func dropQueuedParse(of text: String) {
-        guard let index = queuedJobs.firstIndex(where: { $0.text == text }) else {
+        guard let index = queuedJobs.firstIndex(where: { $0.text.utf8.elementsEqual(text.utf8) }) else {
             return
         }
         let job = queuedJobs.remove(at: index)

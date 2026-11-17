@@ -5,6 +5,13 @@ All notable changes to CodeEditorTreeSitter are documented in this file.
 The `0.1.0` entry below deliberately keeps the name `CodeEditorPlugin` — that is
 what the dependency was called when `0.1.0` shipped.
 
+## [0.2.2] - 2026-11-17
+
+### Fixed
+
+- Highlight caching and scheduling distinguish canonically equivalent spellings
+  with different UTF-16 offsets.
+
 ## [0.2.1] - 2026-11-13
 
 This release remediates the 2026-11-12 full review.

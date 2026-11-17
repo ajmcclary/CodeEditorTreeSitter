@@ -31,6 +31,19 @@ import TreeSitterTestSupport
         _ = asProtocol // compile-time proof of conformance
     }
 
+    @Test func canonicallyEquivalentFilesGetTheirOwnUTF16Ranges() async throws {
+        let composed = HighlightDocumentSnapshot(text: "let greeting = \"caf\u{00e9}\"; let value = 42", languageID: "swift")
+        let decomposed = HighlightDocumentSnapshot(text: "let greeting = \"cafe\u{0301}\"; let value = 42", languageID: "swift")
+        #expect(composed.text == decomposed.text)
+        let warmed = try TreeSitterHighlightProvider.standard(languageID: .swift)
+        let fresh = try TreeSitterHighlightProvider.standard(languageID: .swift)
+        await warmed.prepare(for: composed)
+        let actual = try await warmed.highlights(in: fullRange(decomposed), of: decomposed)
+        let expected = try await fresh.highlights(in: fullRange(decomposed), of: decomposed)
+        #expect(!expected.isEmpty)
+        #expect(actual == expected)
+    }
+
     // MARK: - Unsupported language
 
     @Test func standardFactoryRejectsUnsupportedLanguage() {
