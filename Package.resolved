@@ -114,8 +114,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/ajmcclary/WorkspaceKit.git",
       "state" : {
-        "revision" : "a49b8420a06d52fb16214ffe1b633e0232ab2e39",
-        "version" : "0.1.0-beta.11"
+        "revision" : "d5b5d4bf87e486a3fb18c6a481762ef55d373a08",
+        "version" : "0.1.0-beta.15"
       }
     },
     {
